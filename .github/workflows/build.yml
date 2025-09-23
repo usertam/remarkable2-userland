@@ -1,0 +1,20 @@
+name: Build Artifacts
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04-arm
+    steps:
+    - uses: actions/checkout@v4
+    - uses: DeterminateSystems/nix-installer-action@main
+    - name: Build packages and create archive
+      run: |
+        nix flake show --all-systems --json | \
+          jq -r '.packages."aarch64-linux" | keys[]' | \
+          xargs -I {} nix build .#packages.aarch64-linux.{} --print-out-paths --no-link | \
+          xargs tar -cJf aarch64-linux-packages.tar.xz
+    - uses: actions/upload-artifact@v4
+      with:
+        name: aarch64-linux-packages
+        path: aarch64-linux-packages.tar.xz
