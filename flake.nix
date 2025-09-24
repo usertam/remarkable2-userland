@@ -12,7 +12,7 @@
 
       # The package set I actually want to build in CI.
       packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: {
-        inherit (self.remarkable2Packages.${system}) curl file;
+        inherit (self.remarkable2Packages.${system}) curl file strace;
       });
     };
 }
