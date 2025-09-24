@@ -25,11 +25,11 @@
             gnutar pixz
           ];
         } ''
-          find $srcs -type f -executable -exec install -Dm555 -t $out/bin {} ';'
+          find $srcs -type f -executable -exec install -Dm555 -t $out/bin {} +
 
           mkdir -p $out/tarball
-          time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner \
-            --create --directory=$out/bin * | \
+          cd $out/bin
+          time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c * | \
             pixz -t > $out/tarball/userland.tar.xz
         '';
       });
