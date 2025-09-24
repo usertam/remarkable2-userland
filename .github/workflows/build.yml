@@ -11,11 +11,13 @@ jobs:
     - uses: DeterminateSystems/magic-nix-cache-action@main
     - name: Build packages and create archive
       run: |
-        nix flake show --all-systems --json | \
-          jq -r '.packages."aarch64-linux" | keys[]' | \
-          xargs -I {} nix build .#packages.aarch64-linux.{} --print-out-paths --no-link | \
-          xargs tar -cJf aarch64-linux-packages.tar.xz
+        nix-store --query --references $(nix eval --raw .#packages.aarch64-linux.remarkable2-userland.drvPath) | tee | \
+          grep '\-unknown-' | xargs nix-store --realise | \
+          xargs tar -cJf remarkable2-userland-archive.tar.xz
+        nix build .#packages.aarch64-linux.remarkable2-userland --print-build-logs
     - uses: actions/upload-artifact@v4
       with:
-        name: aarch64-linux-packages
-        path: aarch64-linux-packages.tar.xz
+        name: remarkable2-userland
+        path: |
+          result/bin/*
+          remarkable2-userland-archive.tar.xz
