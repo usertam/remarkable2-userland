@@ -9,19 +9,19 @@ jobs:
     - uses: actions/checkout@v4
     - uses: DeterminateSystems/nix-installer-action@main
     - uses: DeterminateSystems/magic-nix-cache-action@main
-    - name: Build packages and create store archive
+    - name: Build userland and create archive
       run: |
-        nix-store --query --references $(nix eval --raw .#packages.aarch64-linux.remarkable2-userland.drvPath) | tee | \
+        nix build .#packages.aarch64-linux.remarkable2-userland --print-build-logs --keep-going
+    - uses: actions/upload-artifact@v4
+      with:
+        name: remarkable2-userland
+        path: result/tarball/userland.tar.xz
+    - name: Create userland store archive
+      run: |
+        nix-store --query --requisites $(nix eval --raw .#packages.aarch64-linux.remarkable2-userland.drvPath) | \
           grep '\-unknown-' | xargs nix-store --realise | \
           xargs tar -cJf remarkable2-userland-store.tar.xz
     - uses: actions/upload-artifact@v4
       with:
         name: remarkable2-userland-store
         path: remarkable2-userland-store.tar.xz
-    - name: Build userland and create archive
-      run: |
-        nix build .#packages.aarch64-linux.remarkable2-userland --print-build-logs
-    - uses: actions/upload-artifact@v4
-      with:
-        name: remarkable2-userland
-        path: result/tarball/userland.tar.xz

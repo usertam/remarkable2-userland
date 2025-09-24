@@ -15,10 +15,11 @@
           srcs = with self.remarkable2Packages.${system}; [
             coreutils file findutils util-linux which
             diffutils gnugrep gnused gnupatch jq less
-            curl inetutils iproute2 rsync dig # nmap (liblinear), ndisc6 (perl)
+            curl inetutils rsync dig # nmap (liblinear), ndisc6 (perl)
             btop procps lsof strace
             gnutar pigz pixz
             nano tailscale
+            (iproute2.override { python3 = null; })
           ];
           nativeBuildInputs = with nixpkgs.legacyPackages.${system}; [
             gnutar pixz
