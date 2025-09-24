@@ -25,7 +25,8 @@
             gnutar pixz
           ];
         } ''
-          find $srcs -type f -executable -exec install -Dm555 -t $out/bin {} +
+          mkdir -p $out/bin
+          find $srcs -type f -executable -exec cp -n {} $out/bin \;
 
           mkdir -p $out/tarball
           cd $out/bin
