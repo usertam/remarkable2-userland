@@ -15,7 +15,7 @@
           srcs = with self.remarkable2Packages.${system}; [
             coreutils file findutils util-linux which
             diffutils gnugrep gnused gnupatch jq less
-            curl inetutils rsync dig # nmap (liblinear), ndisc6 (perl)
+            curl inetutils rsync # nmap (liblinear), ndisc6 (perl), dig (bind)
             btop procps lsof strace
             gnutar pigz pixz
             nano tailscale
