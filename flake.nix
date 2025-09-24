@@ -15,14 +15,21 @@
           srcs = with self.remarkable2Packages.${system}; [
             coreutils file findutils util-linux which
             diffutils gnugrep gnused gnupatch jq less
-            curl inetutils iproute2 rsync nmap dig ndisc6
+            curl inetutils iproute2 rsync dig ndisc6 # nmap (liblinear)
             btop procps lsof strace
             gnutar pigz pixz
             nano tailscale
           ];
+          nativeBuildInputs = with nixpkgs.legacyPackages.${system}; [
+            gnutar pixz
+          ];
         } ''
-          find $srcs -type f -executable -exec \
-            install -Dm555 -t $out/bin {} ';'
+          find $srcs -type f -executable -exec install -Dm555 -t $out/bin {} ';'
+
+          mkdir -p $out/tarball
+          time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner \
+            --create --directory=$out/bin * | \
+            pixz -t > $out/tarball/userland.tar.xz
         '';
       });
     };
