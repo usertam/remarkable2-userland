@@ -17,7 +17,7 @@
             diffutils gnugrep gnused gnupatch jq less
             curl inetutils rsync # nmap (liblinear), ndisc6 (perl), dig (bind)
             btop procps lsof strace
-            gnutar pigz (pixz.override { asciidoc = null; })
+            gnutar pigz # (pixz.override { asciidoc = null; }) (https://github.com/vasi/pixz/issues/67)
             nano (tailscale.override { iproute2 = iproute2.override { python3 = null; }; })
             (iproute2.override { python3 = null; })
           ];
