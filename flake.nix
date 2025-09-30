@@ -30,7 +30,7 @@
 
           mkdir -p $out/tarball
           cd $out/bin
-          time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c * | \
+          time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c * .* | \
             pixz -t > $out/tarball/userland.tar.xz
         '';
       });
