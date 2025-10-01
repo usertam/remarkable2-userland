@@ -24,7 +24,7 @@
         }
         (''
           mkdir -p $out/bin
-          install -Dm555 -t $out/bin \
+          cp -at $out/bin \
             ${builtins.concatStringsSep " \\\n  " (nixpkgs.lib.mapAttrsToList (
               name: value: let
                 wrapIfMany = nixpkgs.lib.optionalString (builtins.length value > 1);
@@ -34,9 +34,8 @@
             ) (import ./groups.nix))}
 
           # Replace the wrapped tailscaled with a non-wrapped one
-          rm -f $out/bin/tailscale{,d}
+          rm -f $out/bin/tailscaled
           mv $out/bin/.tailscaled-wrapped $out/bin/tailscaled
-          ln -s tailscaled $out/bin/tailscale
 
           mkdir -p $out/tarball
           cd $out/bin
