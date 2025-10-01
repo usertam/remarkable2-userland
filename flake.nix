@@ -22,15 +22,18 @@
             gnutar pixz
           ];
         }
-        (''
+        ''
           mkdir -p $out/bin
           cp -at $out/bin \
             ${builtins.concatStringsSep " \\\n  " (nixpkgs.lib.mapAttrsToList (
               name: value: let
+                pkgs = self.remarkable2Packages.${system};
+                path = nixpkgs.lib.splitString "." name;
+                pkg = nixpkgs.lib.getAttrFromPath path pkgs;
                 wrapIfMany = nixpkgs.lib.optionalString (builtins.length value > 1);
                 bins = wrapIfMany "{" + builtins.concatStringsSep "," value + wrapIfMany "}";
               in
-                self.remarkable2Packages.${system}.${name} + "/bin/" + bins
+                pkg + "/bin/" + bins
             ) (import ./groups.nix))}
 
           # Replace the wrapped tailscaled with a non-wrapped one
@@ -41,7 +44,7 @@
           cd $out/bin
           time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c * .* | \
             pixz -t > $out/tarball/userland.tar.xz
-        '');
+        '';
       });
     };
 }

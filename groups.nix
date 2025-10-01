@@ -28,13 +28,17 @@
 
   util-linux = [
     "fallocate" "fdisk" "losetup" "lsblk"
-    "mount" "umount" "mountpoint"
+    "mountpoint"
     "flock" "ionice" "renice" "nsenter" "unshare"
     "setarch" "setpriv" "setsid" "setterm"
     "dmesg" "logger" "last"
     "rfkill" "lscpu" "hwclock"
     "hexdump" "rev" "look" "more"
     "cal" "uuidgen" "getopt" "whereis"
+  ];
+
+  "util-linux.mount" = [
+    "mount" "umount"
   ];
 
   which = [ "which" ];
