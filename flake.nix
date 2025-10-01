@@ -16,8 +16,11 @@
               url = "https://gitlab.alpinelinux.org/alpine/aports/-/raw/9fa8364d36c83df41af7de6f9d9eddc0b76e42dd/main/musl/getent.c";
               hash = "sha256-phccLbZBzdmcFkFp08XGyjI2F0g87exMu+PrOcWDTfA=";
             };
-            buildCommand = ''
-              cc $src -o $out/bin/getent
+            dontUnpack = true;
+            dontBuild = true;
+            installPhase = ''
+              mkdir -p $out/bin
+              ${prev.lib.getExe prev.stdenv.cc} $src -o $out/bin/getent
             '';
           };
         })
