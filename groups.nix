@@ -12,7 +12,7 @@
     "id" "who" "whoami" "logname"
     "uname" "uptime" "tty"
     "nice" "nohup" "timeout"
-    "stdbuf" "chroot"
+    "chroot"
     "env" "expr" "factor" "seq"
     "df" "du" "stat" "sync"
     "dircolors"
@@ -23,7 +23,7 @@
   file = [ "file" ];
 
   findutils = [
-    "find" "locate" "updatedb" "xargs"
+    "find" "xargs"
   ];
 
   util-linux = [
@@ -61,7 +61,7 @@
 
   inetutils = [
     "ping" "ping6" "traceroute"
-    "hostname" "logger" "whois"
+    "hostname" "whois"
   ];
 
   rsync = [ "rsync" ];
@@ -79,8 +79,8 @@
 
   procps = [
     "kill" "pgrep" "pkill" "pidof"
-    "ps" "top" "w" "pmap"
-    "free" "vmstat" "uptime" "watch"
+    "ps" "top" "pmap"
+    "free" "vmstat" "watch"
     "sysctl"
   ];
 
