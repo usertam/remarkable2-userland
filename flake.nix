@@ -33,6 +33,11 @@
                 self.remarkable2Packages.${system}.${name} + "/bin/" + bins
             ) (import ./groups.nix))}
 
+          # Replace the wrapped tailscaled with a non-wrapped one
+          rm -f $out/bin/tailscale{,d}
+          mv $out/bin/.tailscaled-wrapped $out/bin/tailscaled
+          ln -s tailscaled $out/bin/tailscale
+
           mkdir -p $out/tarball
           cd $out/bin
           time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c * .* | \

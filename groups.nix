@@ -94,7 +94,7 @@
 
   nano = [ "nano" "rnano" ];
 
-  tailscale = [ "tailscale" "tailscaled" ];
+  tailscale = [ ".tailscaled-wrapped" "tailscale" "tailscaled" ];
 
   getent = [ "getent" ];
 
