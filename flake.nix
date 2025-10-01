@@ -26,8 +26,11 @@
       packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: {
         remarkable2-userland = nixpkgs.legacyPackages.${system}.runCommand "remarkable2-userland" rec {
           srcs = nixpkgs.lib.mapAttrsToList (
-            name: value:
-            self.remarkable2Packages.${system}.${name}
+            name: value: let
+              pkgs = self.remarkable2Packages.${system};
+              path = nixpkgs.lib.splitString "." name;
+            in
+              nixpkgs.lib.getAttrFromPath path pkgs
           ) (import ./groups.nix);
           nativeBuildInputs = with nixpkgs.legacyPackages.${system}; [
             gnutar pixz
