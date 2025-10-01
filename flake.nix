@@ -9,6 +9,17 @@
       remarkable2Packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (
         system: nixpkgs.legacyPackages.${system}.pkgsCross.remarkable2.pkgsStatic.extend (final: prev: {
           iproute2 = prev.iproute2.override { python3 = null; };
+          musl-getent = prev.stdenv.mkDerivation {
+            pname = "musl-getent";
+            version = "1.2.5";
+            src = prev.fetchurl {
+              url = "https://gitlab.alpinelinux.org/alpine/aports/-/raw/9fa8364d36c83df41af7de6f9d9eddc0b76e42dd/main/musl/getent.c";
+              hash = "sha256-phccLbZBzdmcFkFp08XGyjI2F0g87exMu+PrOcWDTfA=";
+            };
+            buildCommand = ''
+              cc $src -o $out/bin/getent
+            '';
+          };
         })
       );
 

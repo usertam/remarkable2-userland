@@ -100,7 +100,7 @@
 
   tailscale = [ ".tailscaled-wrapped" "tailscale" "tailscaled" ];
 
-  getent = [ "getent" ];
+  musl-getent = [ "getent" ];
 
   iproute2 = [
     "ip" "ss" "tc"
