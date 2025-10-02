@@ -9,19 +9,26 @@ jobs:
     - uses: actions/checkout@v4
     - uses: DeterminateSystems/nix-installer-action@main
     - uses: DeterminateSystems/magic-nix-cache-action@main
+    - name: Print derivation map and build command
+      run: |
+        nix eval --raw .#packages.aarch64-linux.remarkable2.drvMap --apply 'builtins.toJSON' | jq
+        nix eval --raw .#packages.aarch64-linux.remarkable2.userland.buildCommand
     - name: Build userland and create archive
       run: |
-        nix build .#packages.aarch64-linux.remarkable2-userland --print-build-logs --keep-going
+        nix build .#packages.aarch64-linux.remarkable2.userland --print-build-logs --keep-going
+        cp -a result/tarball/bin.tar.xz remarkable2-userland-bin.tar.xz
     - uses: actions/upload-artifact@v4
       with:
-        name: remarkable2-userland
-        path: result/tarball/userland.tar.xz
-    - name: Create userland store archive
+        name: remarkable2-userland-bin
+        path: remarkable2-userland-bin.tar.xz
+    - name: Print userland runtime dependencies
       run: |
-        nix-store --query --requisites $(nix eval --raw .#packages.aarch64-linux.remarkable2-userland.drvPath) | \
-          grep '\-unknown-' | xargs nix-store --realise | \
-          xargs tar -cJf remarkable2-userland-store.tar.xz
+        nix-store --query --requisites $(nix eval --raw .#packages.aarch64-linux.remarkable2.userland)
+    - name: Create userland build-time binary cache
+      run: |
+        nix build .#packages.aarch64-linux.remarkable2.userland-build-binary-cache --print-build-logs --keep-going
+        cp -a result/tarball/archive.tar.xz remarkable2-userland-build-binary-cache.tar.xz
     - uses: actions/upload-artifact@v4
       with:
-        name: remarkable2-userland-store
-        path: remarkable2-userland-store.tar.xz
+        name: remarkable2-userland-build-binary-cache
+        path: remarkable2-userland-build-binary-cache.tar.xz
