@@ -1,0 +1,134 @@
+diff --git a/arch/arm/mm/proc-v7.S b/arch/arm/mm/proc-v7.S
+index 1234567..abcdef0 100644
+--- a/arch/arm/mm/proc-v7.S
++++ b/arch/arm/mm/proc-v7.S
+@@ -644,7 +644,7 @@ string	cpu_arch_name, "armv7"
+ 	string	cpu_elf_name, "v7"
+ 	.align
+ 
+-	.section ".proc.info.init", #alloc
++	.section ".proc.info.init", "a"
+ 
+ 	/*
+ 	 * Standard v7 proc info content
+diff --git a/arch/arm/mm/proc-v7m.S b/arch/arm/mm/proc-v7m.S
+index 1234567..abcdef0 100644
+--- a/arch/arm/mm/proc-v7m.S
++++ b/arch/arm/mm/proc-v7m.S
+@@ -93,7 +93,7 @@ str	r0, [r2]
+ ret	lr
+ ENDPROC(cpu_cm7_proc_fin)
+
+-	.section ".init.text", #alloc, #execinstr
++	.section ".init.text", "ax"
+
+ __v7m_cm7_setup:
+ 	mov	r8, #(V7M_SCB_CCR_DC | V7M_SCB_CCR_IC| V7M_SCB_CCR_BP)
+@@ -177,7 +177,7 @@ string cpu_arch_name, "armv7m"
+ string cpu_elf_name "v7m"
+ string cpu_v7m_name "ARMv7-M"
+
+-	.section ".proc.info.init", #alloc
++	.section ".proc.info.init", "a"
+
+ .macro __v7m_proc name, initfunc, cache_fns = nop_cache_fns, hwcaps = 0,  proc_fns = v7m_processor_functions
+ 	.long	0			/* proc_info_list.__cpu_mm_mmu_flags */
+diff --git a/arch/arm/boot/compressed/head.S b/arch/arm/boot/compressed/head.S
+index 1234567..abcdef0 100644
+--- a/arch/arm/boot/compressed/head.S
++++ b/arch/arm/boot/compressed/head.S
+@@ -140,7 +140,7 @@ kputc	#'\r'
+ #endif
+ 		.endm
+
+-		.section ".start", #alloc, #execinstr
++		.section ".start", "ax"
+ /*
+  * sort out different calling conventions
+  */
+diff --git a/arch/arm/boot/compressed/piggy.S b/arch/arm/boot/compressed/piggy.S
+index 1234567..abcdef0 100644
+--- a/arch/arm/boot/compressed/piggy.S
++++ b/arch/arm/boot/compressed/piggy.S
+@@ -1,4 +1,4 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+-	.section .piggydata,#alloc
++	.section .piggydata,"a"
+ 	.globl	input_data
+ input_data:
+ 	.incbin	"arch/arm/boot/compressed/piggy_data"
+diff --git a/arch/arm/boot/compressed/big-endian.S b/arch/arm/boot/compressed/big-endian.S
+index 1234567..abcdef0 100644
+--- a/arch/arm/boot/compressed/big-endian.S
++++ b/arch/arm/boot/compressed/big-endian.S
+@@ -6,7 +6,7 @@
+  *  published by the Free Software Foundation.
+  */
+
+-	.section ".start", #alloc, #execinstr
++	.section ".start", "ax"
+
+ 	mrc	p15, 0, r0, c1, c0, 0	@ read control reg
+ 	orr	r0, r0, #(1 << 7)	@ enable big endian mode
+diff --git a/arch/arm/boot/bootp/init.S b/arch/arm/boot/bootp/init.S
+index 1234567..abcdef0 100644
+--- a/arch/arm/boot/bootp/init.S
++++ b/arch/arm/boot/bootp/init.S
+@@ -13,7 +13,7 @@
+  *  size immediately following the kernel, we could build this into
+  *  a binary blob, and concatenate the zImage using the cat command.
+  */
+-		.section .start,#alloc,#execinstr
++		.section .start,"ax"
+ 		.type	_start, #function
+ 		.globl	_start
+
+diff --git a/arch/sparc/kernel/ftrace.c b/arch/sparc/kernel/ftrace.c
+index 1234567..abcdef0 100644
+--- a/arch/sparc/kernel/ftrace.c
++++ b/arch/sparc/kernel/ftrace.c
+@@ -33,7 +33,7 @@ static u32 ftrace_call_replace(unsigned long ip, unsigned long addr)
+ 	"1:	cas	[%[ip]], %[old], %[new]\n"
+ 	"	flush	%[ip]\n"
+ 	"	mov	0, %[faulted]\n"
+ 	"2:\n"
+-	"	.section .fixup,#alloc,#execinstr\n"
++	"	.section .fixup,\"ax\"\n"
+ 	"	.align	4\n"
+ 	"3:	sethi	%%hi(2b), %[faulted]\n"
+ 	"	jmpl	%[faulted] + %%lo(2b), %%g0\n"
+diff --git a/arch/sparc/lib/memset.S b/arch/sparc/lib/memset.S
+index 1234567..abcdef0 100644
+--- a/arch/sparc/lib/memset.S
++++ b/arch/sparc/lib/memset.S
+@@ -183,7 +183,7 @@ retl
+  clr	%o0
+ __memset_end:
+
+-	.section .fixup,#alloc,#execinstr
++	.section .fixup,"ax"
+ 	.align	4
+ 20:
+ 	cmp	%g2, 8
+diff --git a/drivers/char/adi.c b/drivers/char/adi.c
+index 1234567..abcdef0 100644
+--- a/drivers/char/adi.c
++++ b/drivers/char/adi.c
+@@ -29,7 +29,7 @@ bool adi_capable(void)
+ 		"1:	ldxa [%[addr]] %[asi], %[ver]\n"
+ 		"	mov 0, %[err]\n"
+ 		"2:\n"
+-		"	.section .fixup,#alloc,#execinstr\n"
++		"	.section .fixup,\"ax\"\n"
+ 		"	.align 4\n"
+ 		"3:	sethi %%hi(2b), %%g1\n"
+ 		"	jmpl  %%g1 + %%lo(2b), %%g0\n"
+@@ -106,7 +106,7 @@ size_t adi_blksize(void)
+ 		"1:	stxa %[ver], [%[addr]] %[asi]\n"
+ 		"	mov 0, %[err]\n"
+ 		"2:\n"
+-		"	.section .fixup,#alloc,#execinstr\n"
++		"	.section .fixup,\"ax\"\n"
+ 		"	.align 4\n"
+ 		"3:	sethi %%hi(2b), %%g1\n"
+ 		"	jmpl %%g1 + %%lo(2b), %%g0\n"
