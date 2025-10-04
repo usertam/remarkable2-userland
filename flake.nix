@@ -7,7 +7,7 @@
     { self, nixpkgs }:
     {
       packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ] (system: {
-        remarkable2.hostPkgs = nixpkgs.legacyPackages.${system}.pkgsCross.remarkable2.pkgsStatic.extend (
+        remarkable2.pkgs = nixpkgs.legacyPackages.${system}.pkgsCross.remarkable2.pkgsStatic.extend (
           final: prev: {
             iproute2 = prev.iproute2.override { python3 = null; };
             linuxPackages = prev.callPackage ./pkgs/remarkable2-kernel/package.nix { };
@@ -19,9 +19,9 @@
           drvName: binList:
           let
             # Process names with dots in them, e.g. "util-linux.mount" -> pkgs.util-linux.mount
-            inherit (self.packages.${system}.remarkable2) hostPkgs;
+            inherit (self.packages.${system}.remarkable2) pkgs;
             path = nixpkgs.lib.splitString "." drvName;
-            drv = nixpkgs.lib.getAttrFromPath path hostPkgs;
+            drv = nixpkgs.lib.getAttrFromPath path pkgs;
             # Format the binary list in bash brace expansion format.
             wrapIfMulti = nixpkgs.lib.optionalString (builtins.length binList > 1);
             drvBins = (wrapIfMulti "{") + (builtins.concatStringsSep "," binList) + (wrapIfMulti "}");
@@ -35,10 +35,6 @@
           nixpkgs.legacyPackages.${system}.runCommand "remarkable2-userland"
             {
               srcs = nixpkgs.lib.mapAttrsToList (_: v: v.drv) self.packages.${system}.remarkable2.drvMap;
-              nativeBuildInputs = with nixpkgs.legacyPackages.${system}; [
-                gnutar
-                pixz
-              ];
             }
             ''
               mkdir -p $out/bin
@@ -50,33 +46,41 @@
               # Replace the wrapped tailscaled with a non-wrapped one
               rm -f $out/bin/tailscaled
               mv $out/bin/.tailscaled-wrapped $out/bin/tailscaled
-
-              mkdir -p $out/tarball
-              cd $out
-              time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c bin | \
-                pixz -t > $out/tarball/bin.tar.xz
             '';
 
-        remarkable2.userland-build-binary-cache =
-          (nixpkgs.legacyPackages.${system}.mkBinaryCache {
-            name = "remarkable2-userland-build-binary-cache";
-            rootPaths = [ self.packages.${system}.remarkable2.userland.drvPath ];
-          }).overrideAttrs
-            (prev: {
-              nativeBuildInputs =
-                with nixpkgs.legacyPackages.${system};
-                prev.nativeBuildInputs
-                ++ [
-                  gnutar
-                  pixz
-                ];
-              buildCommand = prev.buildCommand + ''
-                mkdir -p $out/tarball
-                cd $out
-                time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c $(ls --ignore=tarball) | \
-                  pixz -t > $out/tarball/archive.tar.xz
-              '';
-            });
+        remarkable2.userland-archive =
+          nixpkgs.legacyPackages.${system}.runCommand "remarkable2-userland-archive"
+            {
+              src = self.packages.${system}.remarkable2.userland;
+              nativeBuildInputs = with nixpkgs.legacyPackages.${system}; [
+                gnutar
+                pixz
+              ];
+            }
+            ''
+              mkdir -p $out/tarball
+              time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c $src | \
+                pixz -9 > $out/tarball/userland-archive.tar.xz
+            '';
+
+        remarkable2.kernel-archive =
+          nixpkgs.legacyPackages.${system}.runCommand "remarkable2-kernel-archive"
+            {
+              srcs = with self.packages.${system}.remarkable2.pkgs; [
+                linuxPackages.kernel
+                linuxPackages.kernel.dev
+                linuxPackages.kernel.modules
+              ];
+              nativeBuildInputs = with nixpkgs.legacyPackages.${system}; [
+                gnutar
+                pixz
+              ];
+            }
+            ''
+              mkdir -p $out/tarball
+              time tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -c $srcs | \
+                pixz -9 > $out/tarball/kernel-archive.tar.xz
+            '';
       });
     };
 }

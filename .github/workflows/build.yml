@@ -13,22 +13,24 @@ jobs:
       run: |
         nix eval --raw .#packages.aarch64-linux.remarkable2.drvMap --apply 'builtins.toJSON' | jq
         nix eval --raw .#packages.aarch64-linux.remarkable2.userland.buildCommand
-    - name: Build userland and create archive
+    - name: Build userland and its archive
       run: |
-        nix build .#packages.aarch64-linux.remarkable2.userland --print-build-logs --keep-going
-        cp -a result/tarball/bin.tar.xz remarkable2-userland-bin.tar.xz
-    - uses: actions/upload-artifact@v4
-      with:
-        name: remarkable2-userland-bin
-        path: remarkable2-userland-bin.tar.xz
+        nix build .#packages.aarch64-linux.remarkable2.userland --print-build-logs --keep-going --no-link
+        nix build .#packages.aarch64-linux.remarkable2.userland-archive --print-build-logs --keep-going
+        cp -a result/tarball/userland-archive.tar.xz remarkable2-userland-archive.tar.xz
     - name: Print userland runtime dependencies
       run: |
         nix-store --query --requisites $(nix eval --raw .#packages.aarch64-linux.remarkable2.userland)
-    - name: Create userland build-time binary cache
-      run: |
-        nix build .#packages.aarch64-linux.remarkable2.userland-build-binary-cache --print-build-logs --keep-going
-        cp -a result/tarball/archive.tar.xz remarkable2-userland-build-binary-cache.tar.xz
     - uses: actions/upload-artifact@v4
       with:
-        name: remarkable2-userland-build-binary-cache
-        path: remarkable2-userland-build-binary-cache.tar.xz
+        name: remarkable2-userland-archive
+        path: remarkable2-userland-archive.tar.xz
+    - name: Build kernel and its archive
+      run: |
+        nix build .#packages.aarch64-linux.remarkable2.pkgs.linuxPackages.kernel --print-build-logs --keep-going --no-link
+        nix build .#packages.aarch64-linux.remarkable2.kernel-archive --print-build-logs --keep-going
+        cp -a result/tarball/kernel-archive.tar.xz remarkable2-kernel-archive.tar.xz
+    - uses: actions/upload-artifact@v4
+      with:
+        name: remarkable2-kernel-archive
+        path: remarkable2-kernel-archive.tar.xz
