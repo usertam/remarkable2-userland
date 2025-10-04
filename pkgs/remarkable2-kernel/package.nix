@@ -20,6 +20,10 @@ let
 
       configfile = src + "/arch/arm/configs/zero-sugar_defconfig";
 
+      # Can't import-from-derivation and parse the config, so hacking this in.
+      # This should trigger isModular, and generate "dev" and "modules" outputs.
+      config."CONFIG_MODULES" = "y";
+
       kernelPatches = [
         {
           name = "fix-binutils-compatibility.patch";
@@ -32,7 +36,20 @@ let
       ];
     }).overrideAttrs
       (prev: {
+        # Surprise, reMarkable compresses their kernels with LZO.
         nativeBuildInputs = prev.nativeBuildInputs ++ [ lzop ];
+
+        # Can't override the defconfig with structuredConfig or kernelPatches.
+        # We are passing configfile which bypasses those wrappers.
+        postConfigure = ''
+          scripts/config --file $buildRoot/.config \
+            --module CONFIG_NET_CORE \
+            --module CONFIG_TUN
+          make "''${makeFlags[@]}" oldconfig
+
+          # Make sure the config doesn't get dropped.
+          grep 'CONFIG_TUN=m' $buildRoot/.config
+        '';
       });
 in
 lib.recurseIntoAttrs (linuxKernel.packagesFor kernel)
