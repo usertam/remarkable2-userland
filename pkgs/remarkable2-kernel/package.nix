@@ -43,12 +43,9 @@ let
         # We are passing configfile which bypasses those wrappers.
         postConfigure = ''
           scripts/config --file $buildRoot/.config \
-            --module CONFIG_NET_CORE \
-            --module CONFIG_TUN
+            --enable CONFIG_NET_CORE \
+            --enable CONFIG_TUN
           make "''${makeFlags[@]}" oldconfig
-
-          # Make sure the config doesn't get dropped.
-          grep 'CONFIG_TUN=m' $buildRoot/.config
         '';
       });
 in

@@ -120,4 +120,12 @@
     "ebtables-nft" "ebtables-nft-restore" "ebtables-nft-save"
     "nfbpf_compile" "nfnl_osf" "nfsynproxy" "xtables-monitor" "xtables-nft-multi"
   ];
+
+  kexec-tools = [
+    "kexec" "vmcore-dmesg"
+  ];
+
+  bash = [
+    "bash" "sh"
+  ];
 }
