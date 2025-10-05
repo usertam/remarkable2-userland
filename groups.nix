@@ -128,4 +128,8 @@
   bash = [
     "bash" "sh"
   ];
+
+  pciutils = [
+    "lspci" "pcilmr" "setpci"
+  ];
 }
