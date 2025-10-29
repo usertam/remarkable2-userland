@@ -33,6 +33,10 @@ let
           name = "fix-gpu-driver-type-mismatch.patch";
           patch = ./fix-gpu-driver-type-mismatch.patch;
         }
+        {
+          name = "enable-uart-tx-on-pogo-id-pin.patch";
+          patch = ./enable-uart-tx-on-pogo-id-pin.patch;
+        }
       ];
     }).overrideAttrs
       (prev: {
@@ -48,7 +52,11 @@ let
             --set-str CONFIG_LOCALVERSION '-nixbld' \
             --enable CONFIG_NET_CORE \
             --enable CONFIG_TUN \
-            --enable CONFIG_NETFILTER
+            --enable CONFIG_NETFILTER \
+            --enable CONFIG_NF_TABLES \
+            --enable CONFIG_NETFILTER_NETLINK \
+            --enable CONFIG_IKCONFIG \
+            --enable CONFIG_IKCONFIG_PROC
           make "''${makeFlags[@]}" oldconfig
         '';
       });
