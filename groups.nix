@@ -132,4 +132,8 @@
   pciutils = [
     "lspci" "pcilmr" "setpci"
   ];
+
+  socat = [
+    "socat" "socat1"
+  ];
 }
