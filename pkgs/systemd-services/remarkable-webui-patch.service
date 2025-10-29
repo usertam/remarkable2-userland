@@ -1,0 +1,16 @@
+[Unit]
+Description=Patch reMarkable Web UI to start unconditionally
+DefaultDependencies=no
+Before=xochitl.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# 1. Set WebInterfaceEnabled to true.
+ExecStart=/bin/sh -c "/bin/sed -i.bak 's/WebInterfaceEnabled=false/WebInterfaceEnabled=true/' /home/root/.config/remarkable/xochitl.conf"
+# 2. Patch /usr/bin/xochitl, if not already patched. Any 'usbF' means done.
+ExecStart=/bin/sh -c "if ! /bin/grep -q 'usbF' /usr/bin/xochitl; then /bin/sed -i.bak 's/usb0/usbF/;s/usb1/usb0/' /usr/bin/xochitl; fi"
+
+[Install]
+WantedBy=multi-user.target
