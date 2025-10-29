@@ -9,7 +9,7 @@ let
   kernel =
     (linuxKernel.manualConfig rec {
       version = "5.4.70-unstable-2025-10-05";
-      modDirVersion = "5.4.70";
+      modDirVersion = "5.4.70-nixbld";
 
       src = fetchFromGitHub {
         owner = "reMarkable";
@@ -45,13 +45,10 @@ let
           make "''${makeFlags[@]}" mrproper
           install ${prev.passthru.configfile} $buildRoot/.config
           scripts/config --file $buildRoot/.config \
+            --set-str CONFIG_LOCALVERSION '-nixbld' \
             --enable CONFIG_NET_CORE \
-            --enable CONFIG_CFG80211 \
-            --enable CONFIG_MAC80211 \
-            --enable CONFIG_BRCMFMAC \
             --enable CONFIG_TUN \
-            --enable CONFIG_IKCONFIG \
-            --enable CONFIG_IKCONFIG_PROC
+            --enable CONFIG_NETFILTER
           make "''${makeFlags[@]}" oldconfig
         '';
       });
