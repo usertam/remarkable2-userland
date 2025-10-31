@@ -136,4 +136,8 @@
   socat = [
     "socat" "socat1"
   ];
+
+  poppler-utils = [
+    "pdfinfo" "pdftotext"
+  ];
 }

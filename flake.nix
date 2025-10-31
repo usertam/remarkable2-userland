@@ -10,6 +10,7 @@
         remarkable2.pkgs = nixpkgs.legacyPackages.${system}.pkgsCross.remarkable2.pkgsStatic.extend (
           final: prev: {
             iproute2 = prev.iproute2.override { python3 = null; };
+            poppler-utils = prev.poppler-utils.override { minimal = true; };
             socat = prev.socat.overrideAttrs (prev: { hardeningEnable = [ ]; });
             linuxPackages = prev.callPackage ./pkgs/remarkable2-kernel/package.nix { };
             alpine-musl-getent = prev.callPackage ./pkgs/alpine-musl-getent/package.nix { };
